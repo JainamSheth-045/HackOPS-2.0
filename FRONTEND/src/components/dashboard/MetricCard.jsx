@@ -12,30 +12,27 @@ export default function MetricCard({
     switch (status) {
       case 'BREACH':
         return {
-          badgeBg: 'bg-rose-100 text-rose-800 border-rose-300',
+          badgeBg: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
           badgeText: 'Statutory Breach',
-          barColor: 'bg-rose-500',
-          borderColor: 'border-rose-200',
-          iconBg: 'bg-rose-50 text-rose-600',
-          glow: 'ring-1 ring-rose-500/20'
+          barColor: 'bg-[#B91C1C]',
+          borderColor: 'border-[#FECACA]',
+          iconBg: 'bg-[#FEE2E2] text-[#B91C1C]'
         };
       case 'WARNING':
         return {
-          badgeBg: 'bg-amber-100 text-amber-800 border-amber-300',
+          badgeBg: 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]',
           badgeText: 'Near Threshold',
-          barColor: 'bg-amber-500',
-          borderColor: 'border-amber-200',
-          iconBg: 'bg-amber-50 text-amber-600',
-          glow: 'ring-1 ring-amber-500/20'
+          barColor: 'bg-[#D97706]',
+          borderColor: 'border-[#FDE68A]',
+          iconBg: 'bg-[#FEF3C7] text-[#92400E]'
         };
       default:
         return {
-          badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+          badgeBg: 'bg-[#EAF1EB] text-[#174B35] border-[#D5E2D8]',
           badgeText: 'Compliant',
-          barColor: 'bg-emerald-500',
-          borderColor: 'border-slate-200',
-          iconBg: 'bg-emerald-50 text-emerald-600',
-          glow: ''
+          barColor: 'bg-[#174B35]',
+          borderColor: 'border-[#E6EBE7]',
+          iconBg: 'bg-[#EAF1EB] text-[#174B35]'
         };
     }
   };
@@ -43,47 +40,47 @@ export default function MetricCard({
   const styles = getStatusStyles();
 
   return (
-    <div className={`bg-white rounded-2xl border ${styles.borderColor} p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden ${styles.glow}`}>
+    <div className={`rounded-xl bg-white border ${styles.borderColor} p-5 shadow-xs transition-shadow hover:shadow-sm`}>
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+          <span className="text-[11px] font-semibold tracking-wider text-[#77827B] uppercase block">
             {title}
           </span>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <span className="text-3xl font-bold text-[#202923] tracking-tight">
               {value}
             </span>
-            <span className="text-xs font-medium text-slate-500">
+            <span className="text-xs font-medium text-[#77827B]">
               {unit}
             </span>
           </div>
         </div>
 
-        <div className={`p-2.5 rounded-xl ${styles.iconBg}`}>
+        <div className={`p-2.5 rounded-lg ${styles.iconBg}`}>
           {Icon && <Icon className="w-5 h-5" />}
         </div>
       </div>
 
       {/* CPCB Standard Info */}
-      <div className="mt-4 pt-3 border-t border-slate-100">
+      <div className="mt-4 pt-3 border-t border-[#E6EBE7]">
         <div className="flex items-center justify-between text-xs mb-1.5">
-          <span className="text-slate-500">CPCB Limit ({standard})</span>
-          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${styles.badgeBg}`}>
+          <span className="text-[#77827B] text-[11px]">CPCB Standard ({standard})</span>
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border uppercase tracking-wide ${styles.badgeBg}`}>
             {styles.badgeText}
           </span>
         </div>
 
-        {/* Utilization Bar */}
-        <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+        {/* Minimal Progress Bar */}
+        <div className="w-full h-1.5 rounded-full bg-[#E6EBE7] overflow-hidden">
           <div 
-            className={`h-full rounded-full transition-all duration-500 ${styles.barColor}`}
+            className={`h-full rounded-full transition-all duration-300 ${styles.barColor}`}
             style={{ width: `${Math.min(utilization || 0, 100)}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1.5">
+        <div className="flex items-center justify-between text-[11px] text-[#77827B] mt-2">
           <span>{description || '24-hr Rolling Average'}</span>
-          <span className="font-semibold text-slate-600">{utilization}% of limit</span>
+          <span className="font-semibold text-[#202923]">{utilization}% of limit</span>
         </div>
       </div>
     </div>

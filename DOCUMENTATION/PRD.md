@@ -1,10 +1,14 @@
 # EcoSentinel AI - Product Requirements Document (PRD)
 
 **Project Name:** EcoSentinel AI  
-**Sub-title:** Environmental Intelligence & Statutory Compliance Management Platform  
+**Sub-title:** Unified Environmental & Incident Intelligence Platform  
 **Target Milestone:** Hackathon MVP (Single Developer Track)  
-**Primary Domain:** Ambient Air Quality Monitoring & CPCB Regulatory Compliance  
-**Regulatory Baseline:** Central Pollution Control Board (CPCB) NAAQS 2009 & National AQI 2014  
+**Core Domains:**
+1. Environmental Pollution (Air Telemetry & CPCB NAAQS 2009 Statutory Compliance, Water, Soil, Noise, Hazardous Waste)
+2. Natural Disasters (Floods, Earthquakes, Landslides, Cyclones, Heatwaves, Wildfires, Droughts)
+3. Accidents & Emergencies (Industrial Disasters, Building Fires, Chemical Explosions, Gas Leaks, Road Collisions, Structural Collapses)
+4. Public Infrastructure (Damaged Roads, Broken Stormwater Drains, Sewage Overflows, Fallen Trees, Water Supply Cuts)  
+**Regulatory Baseline:** Central Pollution Control Board (CPCB) NAAQS 2009, National AQI 2014 & Disaster Management Frameworks  
 **Author:** EcoSentinel AI Engineering Team  
 
 ---
@@ -12,114 +16,189 @@
 ## 1. Executive Summary & Problem Statement
 
 ### 1.1 Problem Statement
-Industrial zones, manufacturing clusters, and regional compliance officers across India face significant friction in environmental compliance:
-1. **Confusion Between Statutory Limits (NAAQS) and Public Communication (AQI):** Field engineers and plant operators often conflate the public **Air Quality Index (AQI)** (a 0–500 health risk scale) with the legally binding **National Ambient Air Quality Standards (NAAQS)** (notified under the Air Act, 1981). A plant may operate within an "AQI Moderate" zone while in actual statutory violation of a 24-hour standard, or vice-versa.
-2. **Complex Statutory Averaging Criteria:** CPCB NAAQS mandates distinct statutory averaging intervals (24-hour for $\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{SO}_2$, $\text{NO}_2$; 8-hour and 1-hour for $\text{CO}$ and $\text{O}_3$; and Annual averages). Ad-hoc manual monitoring fails to track these discrete windows or meet minimum data completeness criteria ($75\%$ valid data capture).
-3. **Data Integrity & Simulation Transparency:** Environmental demo systems often obscure data provenance, blurring lines between simulated test streams and verified physical station feeds.
-4. **Lack of Actionable Root-Cause Guidance:** Traditional telemetry triggers basic alarms but fails to provide operational guidance (e.g., wet scrubber liquor balance, baghouse differential pressure, burner air-fuel ratio) or structured Corrective and Preventive Actions (CAPA).
+Cities, industrial clusters, and municipal administrative bodies across India operate in fragmented, siloed environments when managing public safety, industrial operations, and environmental degradation:
+1. **Siloed Incident Reporting Across Civic Domains:** Citizens and field workers lack a unified portal to report environmental violations (e.g. chemical dumping), municipal infrastructure breakdown (e.g. broken drains, road sinkholes), public accidents (e.g. fires, chemical leaks), and extreme natural hazards (e.g. urban flooding). Reports are scattered across disparate helplines, WhatsApp groups, or lost in bureaucratic red tape.
+2. **Conflation of Environmental Standards & Public Indices:** Plant operators, compliance officers, and civic monitors consistently confuse the legally binding **National Ambient Air Quality Standards (NAAQS)** (notified under the Air Act, 1981) with the public **Air Quality Index (AQI)** (a 0–500 health risk communication metric). An industrial zone may have a "Moderate" AQI while being in direct statutory breach of 24-hour limits for toxic gases, or vice versa.
+3. **Complex Averaging Windows & Data Gaps:** Environmental regulations mandate distinct statutory averaging periods ($24\text{-hr}$ for $\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{SO}_2$, $\text{NO}_2$; $8\text{-hr}$ and $1\text{-hr}$ for $\text{CO}$ and $\text{O}_3$; plus Annual means). Manual tracking ignores minimum data capture thresholds ($75\%$ valid observations), leading to erroneous compliance claims.
+4. **Lack of Intelligent Root-Cause & Response Triage:** In both environmental breaches and municipal emergencies, responders receive raw sensor readings or citizen complaints without immediate risk prioritization, root-cause guidance, or actionable emergency checklists.
+5. **Slow, Opaque Incident Lifecycles:** Traditional reporting systems lack end-to-end lifecycle transparency, real-time geographic tracking, and verified human-in-the-loop audit trails.
 
 ### 1.2 Proposed Solution
-**EcoSentinel AI** is an intelligent, full-stack compliance management platform engineered for Environmental Health & Safety (EHS) managers, plant operators, and environmental auditors. EcoSentinel AI provides:
-* **Real-time Ambient Telemetry Visualization:** Live monitoring with strict data-origin labeling (`[SIMULATED DATA]` vs `[VERIFIED MONITORING]`).
-* **Automated CPCB NAAQS Compliance Engine:** Discrete and operational averaging checks against official CPCB 2009 Gazette standards.
-* **Dual Compliance Status Display:** Side-by-side visualization distinguishing **Statutory Legal Compliance (Pass/Breach)** from **Public Health AQI (Good to Severe)**.
-* **Internal Anomaly & Trend Forecasting:** Operational spike detection heuristics and linear trend lookaheads for proactive emission controls.
-* **Gemini-Powered Compliance Copilot:** Automated advisory reports and mitigation checklists (strictly labeled as non-binding technical advice).
-* **Incident Lifecycle Management:** End-to-end incident ticketing from detection to CAPA resolution.
+**EcoSentinel AI** is a **Unified Environmental & Incident Intelligence Platform** engineered for Municipal Officers, Industrial EHS Managers, First Responders, and Citizens. It unites continuous environmental sensor telemetry with multi-category community incident triage:
+* **Unified Multi-Domain Incident Ingestion:** Rapid reporting for Environmental, Disaster, Emergency, and Infrastructure incidents with photo evidence and geolocation.
+* **Continuous Ambient Air Telemetry & Dual Compliance Engine:** Real-time sensor monitoring with strict visual provenance (`[SIMULATED DATA]` vs `[VERIFIED MONITORING]`) alongside parallel statutory NAAQS evaluation (Pass/Breach) and CPCB National AQI score ($0 - 500$).
+* **Global Interactive Incident & Monitoring Map:** Clustered Leaflet geospatial visualization plotting live environmental monitoring stations alongside active community incidents.
+* **Human-in-the-Loop 7-Stage Incident Lifecycle:** Traceable state transitions (`Submitted` $\rightarrow$ `Under Review` $\rightarrow$ `Verified` $\rightarrow$ `Assigned` $\rightarrow$ `In Progress` $\rightarrow$ `Resolved` $\rightarrow$ `Closed`, plus `Rejected`).
+* **Gemini AI Incident & Advisory Copilot:** Structured AI triage providing root-cause hypotheses, immediate containment steps, emergency resource recommendations, and CAPA checklists—strictly designated as non-binding operational advisory support.
 
 ---
 
-## 2. Official Regulatory References & Authority Sources
+## 2. Four Operational Incident Domains
 
-EcoSentinel AI is grounded in official Indian statutory frameworks:
-1. **CPCB National Ambient Air Quality Standards (NAAQS):** Gazette of India, Extraordinary, Notification No. B-29016/20/90/PCI-L, November 18, 2009.  
-   *Official Link:* [CPCB Air Quality Standards](https://cpcb.nic.in/air-quality-standards/)
-2. **CPCB National Air Quality Index (AQI) Technical Manual:** Central Pollution Control Board, Ministry of Environment, Forest and Climate Change (MoEF&CC), October 2014.  
-   *Official Link:* [CPCB National AQI Portal](https://cpcb.nic.in/National-Air-Quality-Index/)
-3. **The Air (Prevention and Control of Pollution) Act, 1981:** Statutory mandate governing emission compliance and state/central enforcement.  
-   *Official Link:* [Central Pollution Control Board Act Reference](https://cpcb.nic.in)
-4. **National Clean Air Programme (PRANA Portal):** Portal for Regulation of Air-pollution in Non-Attainment cities.  
-   *Official Link:* [PRANA Portal](https://prana.cpcb.gov.in/)
-5. **Central Continuous Ambient Air Quality Monitoring (CAAQMS) Network:** Real-time continuous station network.  
-   *Official Link:* [CPCB CAAQMS Portal](https://app.cpcbccr.com/ccr/)
+EcoSentinel AI categorizes all telemetry, citizen reports, and emergency actions under four distinct operational pillars:
+
+```mermaid
+graph TD
+    Unified[EcoSentinel AI Unified Platform]
+    
+    Unified --> D1[Domain 1: Environmental Pollution]
+    Unified --> D2[Domain 2: Natural Disasters]
+    Unified --> D3[Domain 3: Accidents & Emergencies]
+    Unified --> D4[Domain 4: Public Infrastructure]
+    
+    D1 --> D1_A[Air Pollution - CPCB NAAQS Telemetry]
+    D1 --> D1_B[Water Effluent & River Contamination]
+    D1 --> D1_C[Hazardous Chemical & Oil Dumping]
+    D1 --> D1_D[Noise & Soil Pollution]
+    
+    D2 --> D2_A[Urban Floods & Waterlogging]
+    D2 --> D2_B[Earthquakes & Landslides]
+    D2 --> D2_C[Cyclones, Storms & Heatwaves]
+    
+    D3 --> D3_A[Industrial Fires & Boiler Explosions]
+    D3 --> D3_B[Hazardous Gas Leaks]
+    D3 --> D3_C[Road Collisions & Structural Collapse]
+    
+    D4 --> D4_A[Damaged Roads & Fatal Potholes]
+    D4 --> D4_B[Broken Drains & Sewage Overflows]
+    D4 --> D4_C[Fallen Trees & Water Supply Cutoffs]
+```
+
+1. **Environmental Pollution:**
+   * Air Pollution (continuous PM, SO2, NO2, CO, O3 telemetry against CPCB 2009 Gazette standards).
+   * Industrial wastewater and river effluent dumping.
+   * Hazardous waste disposal and soil contamination.
+   * Chemical spills and toxic gas ventings.
+   * Noise pollution in silent/residential zones.
+2. **Natural Disasters:**
+   * Urban floods, torrential waterlogging, and flash runoff.
+   * Earthquakes, tremor structural impacts, and seismic alerts.
+   * Landslides and mudslides in hilly transport corridors.
+   * Cyclones, severe storm damage, extreme rainfall, heatwaves, and droughts.
+3. **Accidents & Emergencies:**
+   * Industrial boiler explosions and factory fires.
+   * Toxic gas leaks (ammonia, chlorine, VOCs).
+   * Major road, highway, and transit collisions.
+   * Structural collapses (bridges, buildings, retaining walls).
+   * Electrical grid failures, transformer fires, and live cable hazards.
+4. **Public Infrastructure:**
+   * Severe potholes, road cave-ins, and damaged pavements.
+   * Blocked stormwater drains and overflowing municipal sewers.
+   * Fallen trees or large branches obstructing main arteries.
+   * Municipal water main bursts and drinking water contamination.
 
 ---
 
-## 3. Statutory NAAQS Compliance vs. Public AQI
+## 3. Seven Core Platform Modules
 
-The system enforces a clear programmatic and visual separation between statutory legal compliance and public health index communication:
+EcoSentinel AI organizes functionality into seven primary web modules accessible through its unified interface:
 
-| Dimension | CPCB NAAQS Statutory Compliance | CPCB National AQI |
-| :--- | :--- | :--- |
-| **Legal Basis** | Notified under Air Act (1981) Section 16(2)(h). | Public health advisory index (MoEF&CC / CPCB, 2014). |
-| **Output Type** | **Binary / Statutory:** `COMPLIANT` vs `STATUTORY BREACH`. | **Ordinal Health Score:** $0 - 500$ across 6 colored bands. |
-| **Averaging Windows** | Exact statutory periods: 24-hr ($\text{PM}_{2.5}, \text{PM}_{10}, \text{SO}_2, \text{NO}_2$), 8-hr & 1-hr ($\text{CO}, \text{O}_3$), Annual. | Pollutant-specific windows aggregated into max sub-index ($I_{\text{max}}$). |
-| **Data Requirement** | Requires valid sampling capture (minimum $75\%$ or 16 hours of valid data for 24-hr mean). | Requires at least 3 pollutants with at least one particulate parameter ($\text{PM}_{2.5}$ or $\text{PM}_{10}$). |
-| **Consequence of Exceedance** | Triggers regulatory liability, show-cause notices, or operational inspection orders. | Alerts public regarding outdoor activity, sensitive health precautions, and air purifying recommendations. |
+| # | Module Name | Route | Core Capabilities |
+| :-: | :--- | :--- | :--- |
+| **1** | **Global Dashboard** | `/` | Real-time multi-category KPI cards, active emergency alerts, ambient air summary, quick incident stats, and interactive overview map preview. |
+| **2** | **Report an Incident** | `/report` | Unified multi-category incident intake form with category-specific dropdowns, GPS coordinate capture, photo/evidence upload simulation, and severity selector. |
+| **3** | **AI Incident Intelligence** | `/intelligence` | Gemini-powered triage copilot, operational anomaly detection (40% in 15m demo heuristic), predictive trend forecasting, and advisory emergency playbooks. |
+| **4** | **Environmental Compliance** | `/compliance` | CPCB NAAQS 2009 statutory evaluation matrix, 24h/8h/1h averaging calculations, $75\%$ data completeness tracking, and dual Pass/Breach vs AQI comparison. |
+| **5** | **Incident Management** | `/incidents` | Complete 7-stage incident ticketing hub, departmental assignment, status progression, CAPA tracking, evidence inspection, and chronological audit log. |
+| **6** | **Global Incident Map** | `/map` | Dedicated full-screen Leaflet geospatial visualization displaying clustered incident markers (color-coded by severity) and live environmental monitoring stations. |
+| **7** | **Settings** | `/settings` | Station configuration, threshold customizers, API keys status, simulated data scenario toggles, and notification preferences. |
 
 ---
 
-## 4. Target Users & Personas
+## 4. Official Regulatory & Authority References
 
-| Persona | Role | Primary Goals | Key Pain Points |
+EcoSentinel AI aligns with official statutory frameworks in India:
+1. **CPCB National Ambient Air Quality Standards (NAAQS):** Gazette of India, Notification No. B-29016/20/90/PCI-L, November 18, 2009 ([CPCB Air Standards](https://cpcb.nic.in/air-quality-standards/)).
+2. **CPCB National Air Quality Index (AQI) Technical Manual:** Central Pollution Control Board & MoEF&CC, October 2014 ([CPCB AQI Portal](https://cpcb.nic.in/National-Air-Quality-Index/)).
+3. **The Air (Prevention and Control of Pollution) Act, 1981:** Statutory mandate for emissions and ambient monitoring ([CPCB Acts & Rules](https://cpcb.nic.in)).
+4. **The Disaster Management Act, 2005 & NDMA Guidelines:** Incident command principles and hazard classifications ([NDMA Portal](https://ndma.gov.in/)).
+5. **Central Continuous Ambient Air Quality Monitoring (CAAQMS) Network:** Real-time continuous station network ([CPCB CCR Portal](https://app.cpcbccr.com/ccr/)).
+
+---
+
+## 5. Target Users & Personas
+
+| Persona | Role | Primary Objectives | Platform Usage |
 | :--- | :--- | :--- | :--- |
-| **Industrial EHS Manager** | Plant Environmental Safety Lead | Ensure zero statutory breaches, audit operational emission trends, manage CAPA workflows. | Alert fatigue, manual logbooks, fear of regulatory notices under the Air Act. |
-| **Plant Operations Engineer** | Shift Supervisor / Utility Lead | Monitor operational limits, regulate scrubbers and bag filters, resolve open incident tickets. | Lacks immediate root-cause diagnosis when particulate or gaseous parameters surge. |
-| **Environmental Auditor** | Regulatory / Third-party Green Auditor | Audit compliance records, inspect data capture completeness, review corrective action resolution. | Tedious manual log reconciliation, lack of standardized incident audit trails. |
+| **Municipal Officer / Dispatcher** | Urban Local Body / Disaster Management Cell | Triage incoming civic complaints, verify emergencies, assign road/drainage crews or fire responders. | Uses `/incidents` to verify and assign tickets; monitors `/map` for geospatial clusters. |
+| **Industrial EHS Manager** | Plant Safety & Environmental Compliance Lead | Prevent statutory NAAQS violations, investigate equipment leaks, complete mandatory CAPA records. | Analyzes `/compliance` and `/intelligence` to adjust scrubbers/baghouses before statutory breaches occur. |
+| **Citizen / Plant Operator** | Community Member or Floor Worker | Report hazardous incidents, view neighborhood air quality, monitor status of reported issues. | Submits reports via `/report`; tracks local air quality on `/` and `/map`. |
+| **Environmental & Safety Auditor** | Third-party or State Pollution Control Auditor | Inspect historical compliance, audit CAPA completion logs, review data completeness records. | Audits `/compliance` and `/incidents` for statutory evidence trails and data completeness. |
 
 ---
 
-## 5. Scope Definition & Single-Developer Hackathon Feasibility
+## 6. End-to-End User Journeys
 
-### 5.1 In-Scope (Hackathon MVP)
-* **Air Pollution Focus:** 6 core ambient pollutants:
-  * Fine Particulates: $\text{PM}_{2.5}$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
-  * Coarse Particulates: $\text{PM}_{10}$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
-  * Sulphur Dioxide: $\text{SO}_2$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
-  * Nitrogen Dioxide: $\text{NO}_2$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
-  * Carbon Monoxide: $\text{CO}$ ($8\text{-hr}$ and $1\text{-hr}$, $\text{mg}/\text{m}^3$)
-  * Ground-level Ozone: $\text{O}_3$ ($8\text{-hr}$ and $1\text{-hr}$, $\mu\text{g}/\text{m}^3$)
-* **Compliance Checks (MVP):** Short-term statutory standards ($24\text{-hr}$, $8\text{-hr}$, and $1\text{-hr}$) evaluated via discrete calculation windows and operational rolling monitors.
-* **Simulated Telemetry:** Synthetic data streams clearly labeled as `[SIMULATED DATA]` with configurable scenarios (normal operations, gradual build-up, sudden spike).
-* **Incident & CAPA Tracking:** Incident generation, severity ratings, assignment, and status lifecycle.
-* **Gemini Advisory Copilot:** Structured prompt pipeline delivering technical root-cause hypotheses and CAPA checklists with mandatory non-regulatory disclaimers.
+### 6.1 Citizen / Operator Incident Reporting Journey
+1. **Access Intake:** User navigates to `/report` on desktop or mobile.
+2. **Select Domain:** Chooses from 4 categories: *Environmental*, *Natural Disaster*, *Emergency*, or *Public Infrastructure*.
+3. **Specify Incident Type:** Selects specific incident type (e.g. *Chemical Leak*, *Severe Pothole*, *Urban Waterlogging*).
+4. **Locate & Detail:** Sets geographic coordinates (auto-detect GPS or select from city presets), provides description, attaches simulated photo evidence, and marks initial severity.
+5. **Submission & Tracking:** System validates inputs, persists incident in `Submitted` state, generates unique tracking code (`INC-YYYY-XXXXX`), and displays confirmation.
 
-### 5.2 Future Scope (Post-MVP)
-* **Annual NAAQS Compliance Assessment:** Requires arithmetic mean of minimum 104 measurements in a year (twice a week 24-hourly at uniform intervals). Postponed due to lack of historical year-long datasets in hackathon demo mode.
-* **Toxic Trace Pollutants:** Ammonia ($\text{NH}_3$), Lead ($\text{Pb}$), Nickel ($\text{Ni}$), Arsenic ($\text{As}$), Benzene ($\text{C}_6\text{H}_6$), Benzo(a)pyrene ($\text{BaP}$).
-* **Effluent & Solid Waste:** Industrial wastewater parameters (pH, BOD, COD, TSS) and hazardous waste manifest tracking.
-* **Automated Regulatory Filing:** Direct webhook/API integration with State Pollution Control Board (SPCB) online portals.
+### 6.2 Municipal Officer / Dispatcher Triage Journey
+1. **Live Review:** Officer opens `/incidents` or inspects the `/map` geospatial cluster.
+2. **Review Evidence:** Transitions ticket from `Submitted` to `Under Review`. Inspects uploaded photos and descriptions.
+3. **AI Triage Assistance:** Clicks **"Generate AI Advisory"** on `/intelligence`. Gemini delivers severity assessment, immediate hazards, and suggested containment measures.
+4. **Verification & Assignment:** Officer approves verification (`Verified`), assigns ticket to responsible agency (e.g., *Municipal Works*, *Disaster Response*, *State PCB*), and updates status to `Assigned`.
+5. **Resolution:** Assigned crew executes work, logs corrective action notes, and transitions state to `In Progress` $\rightarrow$ `Resolved` $\rightarrow$ `Closed`.
+
+### 6.3 Industrial EHS Manager Compliance Journey
+1. **Continuous Telemetry:** Manager monitors `/` and `/compliance` for real-time station metrics.
+2. **Early Surge Warning:** Internal anomaly heuristic alerts to a $40\%$ surge in $\text{SO}_2$ within 15 minutes.
+3. **Compliance Evaluation:** Manager checks 24-hour statutory averaging progress and time-to-breach projection ($T_{\text{breach}}$).
+4. **Copilot Root Cause Analysis:** Generates Gemini technical advisory for scrubbing efficiency and burner fuel mixtures.
+5. **Auto-Incident Prevention:** If statutory threshold is breached, system auto-generates a high-severity incident ticket with mandatory CAPA requirement.
 
 ---
 
-## 6. High-Level Core Features
+## 7. Scope Definition: MVP vs. Future Scope
 
+EcoSentinel AI is designed for single-developer hackathon execution while maintaining an enterprise-grade conceptual architecture.
+
+### 7.1 In-Scope (Hackathon MVP)
+* **Unified 4-Domain Incident Ingestion:** Full support for submitting, tracking, and managing all 4 categories (Environmental, Disasters, Emergencies, Infrastructure).
+* **7-Stage Incident Lifecycle:** Complete workflow management with status progression (`Submitted` $\rightarrow$ `Closed`) and assignment tracking.
+* **Full Air Pollution Telemetry (6 Core Parameters):**
+  * $\text{PM}_{2.5}$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
+  * $\text{PM}_{10}$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
+  * $\text{SO}_2$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
+  * $\text{NO}_2$ ($24\text{-hr}$, $\mu\text{g}/\text{m}^3$)
+  * $\text{CO}$ ($8\text{-hr}$ and $1\text{-hr}$, $\text{mg}/\text{m}^3$)
+  * $\text{O}_3$ ($8\text{-hr}$ and $1\text{-hr}$, $\mu\text{g}/\text{m}^3$)
+* **Automated CPCB NAAQS 2009 Standards Checker:** Discrete and rolling evaluations with $75\%$ data completeness validation.
+* **Official CPCB National AQI 2014 Calculator:** Piecewise linear sub-index interpolation, prominent pollutant detection, and minimum 3-pollutant rule.
+* **Strict Telemetry Provenance Badging:** Mandatory visual distinction (`[SIMULATED DATA]` vs `[VERIFIED MONITORING]`).
+* **Global Interactive Incident Map:** Full-page and dashboard Leaflet maps showing monitoring stations and multi-category incident markers with risk color-coding.
+* **Gemini AI Incident & Advisory Copilot:** Structured prompt service delivering root-cause analysis, emergency playbooks, and CAPA recommendations with prominent disclaimers.
+* **Unified Database Schema:** 10 normalized PostgreSQL/Supabase tables.
+
+### 7.2 Future Scope (Post-MVP)
+* **Annual NAAQS Compliance Assessment:** Requires $\ge 104$ discrete 24-hour measurements per year; deferred due to lack of multi-year historical logs in demo mode.
+* **IoT Hardware Ingestion:** Direct MQTT/LoRaWAN sensor streams for water effluent (pH, BOD, COD, TSS) and noise level decibel meters.
+* **Direct Emergency Dispatch Integration:** Webhooks into emergency 112 services, police CAD systems, and municipal work-order ERPs.
+* **Crowdsourced Mobile App:** Native Android/iOS mobile application with background camera capture and automated EXIF metadata validation.
+* **Automated State PCB Form 4 Filings:** Automated regulatory compliance PDF export adhering to state pollution control board audit formats.
+
+---
+
+## 8. MVP Development Roadmap
+
+```mermaid
+flowchart LR
+    S1[Sprint 1: Architecture & Docs] --> S2[Sprint 2: Unified DB & REST APIs]
+    S2 --> S3[Sprint 3: Compliance & AQI Engine]
+    S3 --> S4[Sprint 4: Multi-Domain UI & Maps]
+    S4 --> S5[Sprint 5: Gemini Copilot & Verification]
 ```
-+-----------------------------------------------------------------------------------+
-|                                 EcoSentinel AI                                    |
-+-----------------------------------------------------------------------------------+
-|  1. Real-time Ambient Telemetry   |  2. Statutory CPCB Compliance Engine          |
-|     - PM2.5, PM10, SO2, NO2       |     - Exact 24-hr, 8-hr, 1-hr NAAQS Limits    |
-|     - CO, O3 (8h & 1h standards)  |     - Discrete & Operational Rolling Windows  |
-|     - Provenance: [SIMULATED]     |     - Binary Legal Compliance: Pass / Breach  |
-+-----------------------------------+-----------------------------------------------+
-|  3. Internal Anomaly & Forecast   |  4. Incident & CAPA Management                |
-|     - Demo Heuristic: ≥40% in 15m |     - Breach-to-Incident Auto-generation      |
-|     - Trend Lookahead (6h - 24h)  |     - Action Items, Assignee, Deadlines       |
-|     - Estimated Time-to-Breach    |     - Status: Open -> Review -> Mitigated     |
-+-----------------------------------+-----------------------------------------------+
-|                      5. Gemini AI Compliance Copilot                              |
-|     - Contextual Root-Cause Hypotheses & Engineering Controls                     |
-|     - Step-by-Step Mitigation Checklist (Advisory Only - Non-regulatory)          |
-+-----------------------------------------------------------------------------------+
-```
 
----
-
-## 7. MVP Execution Roadmap
-
-* **Sprint 1: System Baseline & Schema Initialization** (Documentation review, Supabase tables, seed scripts).
-* **Sprint 2: Backend Rule Engine & Telemetry Simulator** (NAAQS limits, AQI calculator, discrete window aggregator, Express APIs).
-* **Sprint 3: Frontend Dashboard & Recharts** (Station switcher, dual-status indicators, time-series charts with statutory threshold lines).
-* **Sprint 4: Gemini Advisory & Incident Lifecycle** (Structured AI prompt pipeline, incident ticket management, CAPA workflow).
-* **Sprint 5: End-to-End Verification & Polish** (UI polish, simulated scenarios testing, hackathon demo dry-run).
+* **Sprint 1 (Current): Comprehensive Architecture & Documentation Alignment**  
+  Finalize unified PRD, DRD, Technical Design, and Database Schema across all 4 domains.
+* **Sprint 2: Unified Database & Backend Foundation**  
+  Deploy 10 Supabase tables; build Express controllers for `/api/incidents`, `/api/telemetry`, and `/api/locations`.
+* **Sprint 3: CPCB Compliance & Simulation Engine**  
+  Implement exact 2009 NAAQS averaging, AQI piecewise calculator, and simulated telemetry generators.
+* **Sprint 4: Frontend Module Expansion & Interactive Maps**  
+  Implement the 7 core modules, unified incident reporting form, Leaflet map clustering, and Minimal Premium UI design.
+* **Sprint 5: Gemini Advisory Pipeline & End-to-End Polish**  
+  Connect Gemini 1.5 Flash structured advisory endpoint with safety disclaimers, verify demo scenarios, and package submission.

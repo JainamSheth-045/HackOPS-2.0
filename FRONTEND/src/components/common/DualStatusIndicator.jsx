@@ -1,74 +1,94 @@
-import { AlertOctagon, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { AlertOctagon, CheckCircle2, ShieldAlert, Scale } from 'lucide-react';
 
 export default function DualStatusIndicator({ statutory, aqi }) {
   const isCompliant = statutory.isCompliant;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* Metric A: Statutory CPCB NAAQS Compliance */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className={`p-2.5 rounded-lg flex items-center justify-center ${isCompliant ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+    <div className="bg-white rounded-xl border border-[#E6EBE7] p-5 shadow-xs">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5">
+        {/* Metric A: Statutory CPCB NAAQS Compliance (Air Act 1981) */}
+        <div className="flex-1 flex items-start sm:items-center gap-4 p-3.5 rounded-lg bg-[#F7F9F7] border border-[#E6EBE7]">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+            isCompliant 
+              ? 'bg-[#EAF1EB] text-[#174B35]' 
+              : 'bg-[#FEE2E2] text-[#B91C1C]'
+          }`}>
             {isCompliant ? (
               <CheckCircle2 className="w-5 h-5" />
             ) : (
-              <ShieldAlert className="w-5 h-5 text-rose-600 animate-pulse" />
+              <ShieldAlert className="w-5 h-5" />
             )}
           </div>
           <div>
-            <div className="text-xs uppercase tracking-wider font-semibold text-slate-500">
-              Statutory NAAQS Status (2009)
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-medium tracking-wide uppercase text-[#77827B] flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-[#174B35]" />
+                Statutory CPCB NAAQS Status
+              </span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white text-[#77827B] border border-[#E6EBE7] font-mono">
+                2009 Standards
+              </span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-sm font-bold px-2 py-0.5 rounded ${isCompliant ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'}`}>
+            <div className="flex items-center gap-2.5 mt-1 flex-wrap">
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded border uppercase tracking-wider ${
+                isCompliant 
+                  ? 'bg-[#EAF1EB] text-[#174B35] border-[#D5E2D8]' 
+                  : 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
+              }`}>
                 {statutory.status}
               </span>
               {!isCompliant && (
-                <span className="text-xs text-rose-600 font-medium">
-                  {statutory.breachedPollutants?.join(', ')} exceeded 24h limit
+                <span className="text-xs text-[#B91C1C] font-medium">
+                  {statutory.breachedPollutants?.join(', ')} exceeds 24h statutory limit
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        {/* Divider for desktop */}
-        <div className="hidden md:block w-px h-10 bg-slate-200"></div>
+        {/* Center Divider */}
+        <div className="hidden lg:block w-px h-12 bg-[#E6EBE7]" />
 
-        {/* Metric B: CPCB National AQI (2014) */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="p-2.5 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+        {/* Metric B: CPCB National AQI (Public Health Communication) */}
+        <div className="flex-1 flex items-start sm:items-center gap-4 p-3.5 rounded-lg bg-[#F7F9F7] border border-[#E6EBE7]">
+          <div className="w-10 h-10 rounded-lg bg-[#FEF3C7] text-[#92400E] shrink-0 flex items-center justify-center">
             <AlertOctagon className="w-5 h-5" />
           </div>
-          <div>
-            <div className="text-xs uppercase tracking-wider font-semibold text-slate-500">
-              National Air Quality Index (AQI)
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium tracking-wide uppercase text-[#77827B]">
+                National Air Quality Index (AQI)
+              </span>
+              <span className="text-[11px] text-[#77827B]">
+                Scale 0–500
+              </span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-base font-extrabold text-slate-800">
+            <div className="flex items-center gap-2.5 mt-1 flex-wrap">
+              <span className="text-xl font-bold text-[#202923] tracking-tight">
                 {aqi.score}
               </span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+              <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
                 {aqi.category}
               </span>
-              <span className="text-xs text-slate-500">
-                (Prominent: <strong className="text-slate-700">{aqi.prominentPollutant}</strong>)
+              <span className="text-xs text-[#77827B]">
+                (Prominent Pollutant: <strong className="text-[#202923] font-semibold">{aqi.prominentPollutant}</strong>)
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Explanatory Regulatory Context Banner */}
-      <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <span className="font-semibold text-slate-700">Regulatory Note:</span> Statutory limits carry legal enforcement under the Air Act (1981); AQI communicates public health risk.
+      {/* Regulatory Context Notice */}
+      <div className="mt-4 pt-3 border-t border-[#E6EBE7] flex items-center justify-between flex-wrap gap-2 text-xs text-[#77827B]">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#174B35]" />
+          <span className="text-[#202923] font-medium">Regulatory Distinction:</span>
+          <span>NAAQS enforces legal thresholds under the Air Act (1981); AQI provides public health guidance.</span>
         </div>
-        <div className="text-slate-400">
-          Ref: CPCB Gazette Notification B-29016/20/90/PCI-L
+        <div className="text-[11px] text-[#77827B]">
+          CPCB Notification B-29016/20/90/PCI-L
         </div>
       </div>
     </div>
   );
 }
-

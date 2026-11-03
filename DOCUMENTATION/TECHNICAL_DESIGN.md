@@ -1,239 +1,335 @@
 # EcoSentinel AI - Technical Design Document (TDD)
 
 **Project Name:** EcoSentinel AI  
+**Sub-title:** Unified Environmental & Incident Intelligence Platform  
 **Architecture:** Decoupled Full-Stack Web Application (SPA + REST API)  
-**Stack:** React 19 + Vite (Frontend), Node.js + Express (Backend), Supabase PostgreSQL (Database), Google Gemini API (AI)  
-**Regulatory Standards:** CPCB NAAQS 2009 & CPCB National AQI 2014  
+**Frontend Stack:** React 19, Vite, Tailwind CSS, Lucide React, Recharts, Leaflet & React Leaflet  
+**Backend Stack:** Node.js, Express.js (ES Modules), Supabase PostgreSQL Client, Google Gemini API SDK  
+**Database:** PostgreSQL (Supabase Cloud)  
+**Target Milestone:** Hackathon MVP (Single-Developer Architecture)  
 
 ---
 
-## 1. System Architecture & High-Level Flow
+## 1. High-Level System Architecture
 
 ```mermaid
 graph TD
-    subgraph "Frontend Layer (React 19 + Vite)"
-        UI[React UI Dashboard]
-        DualStatus[Dual-Status Banner<br/>NAAQS Statutory vs CPCB AQI]
-        Provenance[Data Origin Badge<br/>SIMULATED vs VERIFIED]
-        Charts[Recharts Visualizer<br/>NAAQS Threshold Overlays]
+    subgraph "Frontend Client (React 19 + Vite)"
+        Router[React Router DOM]
+        DashboardView[1. Global Dashboard '/']
+        ReportView[2. Report Incident '/report']
+        IntelView[3. AI Intelligence '/intelligence']
+        ComplianceView[4. Compliance Checker '/compliance']
+        IncidentView[5. Incident Management '/incidents']
+        MapView[6. Global Incident Map '/map']
+        SettingsView[7. Settings '/settings']
+        
+        Router --> DashboardView
+        Router --> ReportView
+        Router --> IntelView
+        Router --> ComplianceView
+        Router --> IncidentView
+        Router --> MapView
+        Router --> SettingsView
     end
 
-    subgraph "API & Business Logic (Node.js + Express)"
-        Router[Express REST API Router]
-        SimEngine[Telemetry Simulator<br/>data_origin=SIMULATED]
-        Averager[Discrete & Rolling Window Averager<br/>75% Data Completeness Check]
-        RulesEngine[CPCB NAAQS 2009 Rule Engine<br/>24h, 8h, 1h Statutory Standards]
-        AQIEngine[CPCB AQI 2014 Calculator<br/>Sub-indices & Prominent Pollutant]
-        AnomalyEngine[Internal Surge Heuristic<br/>40% in 15m Demo Trigger]
-        GeminiService[Gemini Advisory Service<br/>Prompt Builder + Safety Wrappers]
+    subgraph "Backend API (Node.js + Express)"
+        ExpressServer[Express Server :5000]
+        Middleware[CORS + JSON Parser + Error Handler]
+        
+        subgraph "Controllers & Route Handlers"
+            IncidentsCtrl[incidentsController.js]
+            TelemetryCtrl[telemetryController.js]
+            ComplianceCtrl[complianceController.js]
+            AICtrl[aiController.js]
+            LocationsCtrl[locationsController.js]
+        end
+        
+        subgraph "Domain Engines & Services"
+            CPCBEngine[cpcbRulesEngine.js<br/>NAAQS 2009 Standards Checker]
+            AQIEngine[aqiCalculator.js<br/>CPCB AQI 2014 Breakpoint Engine]
+            AnomalyEngine[anomalyDetector.js<br/>Surge Heuristic & Trajectory]
+            GeminiService[geminiService.js<br/>Incident Triage & Advisory Pipeline]
+        end
     end
 
-    subgraph "External Cloud Services"
-        Supabase[(Supabase PostgreSQL)]
-        GeminiCloud[Google Gemini API]
+    subgraph "External Data & AI Services"
+        Supabase[(Supabase PostgreSQL<br/>10 Relational Tables)]
+        GeminiAPI[Google Gemini API<br/>gemini-1.5-flash / gemini-2.0-flash]
     end
 
-    UI -->|REST API Requests| Router
-    Router --> SimEngine
-    Router --> Averager
-    Averager --> RulesEngine
-    Averager --> AQIEngine
-    Router --> AnomalyEngine
-    Router --> GeminiService
+    Frontend Client -->|REST API Calls /api/*| ExpressServer
+    ExpressServer --> Middleware
+    Middleware --> IncidentsCtrl
+    Middleware --> TelemetryCtrl
+    Middleware --> ComplianceCtrl
+    Middleware --> AICtrl
+    Middleware --> LocationsCtrl
 
-    SimEngine -->|Persist Readings| Supabase
-    RulesEngine -->|Log Breaches & Incidents| Supabase
-    GeminiService -->|Structured Advisory Request| GeminiCloud
-    GeminiService -->|Audit Log| Supabase
+    IncidentsCtrl --> Supabase
+    LocationsCtrl --> Supabase
+    TelemetryCtrl --> AnomalyEngine
+    TelemetryCtrl --> Supabase
+    ComplianceCtrl --> CPCBEngine
+    ComplianceCtrl --> AQIEngine
+    ComplianceCtrl --> Supabase
+
+    AICtrl --> GeminiService
+    GeminiService --> GeminiAPI
+    GeminiService -->|Log AI Audit| Supabase
 ```
 
 ---
 
-## 2. Regulatory Logic Engine Architecture
+## 2. Frontend Application Design (React 19 + Vite)
 
-### 2.1 CPCB NAAQS Evaluation Logic
-*Reference: CPCB Notification No. B-29016/20/90/PCI-L (2009)*
+### 2.1 Route Architecture & Page Structure
+The frontend application uses React Router with seven top-level navigation routes wrapped in a common layout:
 
-The backend implements `cpcbRulesEngine.js` which evaluates incoming telemetry against the official standards:
+| Route Path | Component Name | Functional Role |
+| :--- | :--- | :--- |
+| `/` | `DashboardPage.jsx` | Executive summary metrics, active emergency tickers, ambient air overview, and Leaflet mini-map preview. |
+| `/report` | `ReportIncidentPage.jsx` | Unified incident intake form supporting all 4 categories, photo evidence preview, map pin selection, and severity assignment. |
+| `/intelligence` | `IntelligencePage.jsx` | AI-assisted incident triage copilot, operational anomaly spike logs, linear trend projections, and advisory containment plans. |
+| `/compliance` | `CompliancePage.jsx` | CPCB NAAQS 2009 statutory evaluation grid, discrete 24h/8h/1h averages, $75\%$ data completeness indicators, and AQI comparison. |
+| `/incidents` | `IncidentManagementPage.jsx` | Multi-category incident management hub, 7-stage status workflow, department assignment modals, and CAPA resolution tracking. |
+| `/map` | `GlobalMapPage.jsx` | Full-screen interactive Leaflet map displaying active incidents across all 4 domains alongside ambient air monitoring stations. |
+| `/settings` | `SettingsPage.jsx` | Station metadata editor, simulated scenario toggles, threshold overrides, API status checks, and data export. |
+
+### 2.2 Leaflet Geospatial Map Architecture
+The mapping system integrates `leaflet` and `react-leaflet` with OpenStreetMap Carto tiles:
+* **Custom Marker Design:** High-visibility SVG div-icons representing:
+  * **Station Markers:** Circular badges colored by AQI band (Green: Good, Amber: Moderate, Red: Poor/Very Poor, Purple: Severe).
+  * **Incident Markers:** Warning-triangle glyphs colored by incident severity (Amber: Low, Orange: Moderate, Red: High, Crimson/Purple: Critical).
+* **Popup Overlays:** Informative overlays detailing pollutant concentrations, compliance status, or incident description with a one-click button to inspect full ticket details.
+* **Filter Bar:** Real-time client-side filter controls enabling simultaneous filtering by Domain (All, Environmental, Disaster, Emergency, Infrastructure) and Severity.
+
+---
+
+## 3. Backend Architecture & Controller Hierarchy (Express.js)
+
+The backend is built with ES modules in Node.js, structured for single-developer clarity and high testability without unnecessary microservice overhead:
+
+```text
+BACKEND/
+├── src/
+│   ├── config/
+│   │   ├── env.js                 # Environment variable validation
+│   │   ├── supabase.js            # Supabase PostgreSQL client initialization
+│   │   └── gemini.js              # Google Gen AI SDK client configuration
+│   ├── controllers/
+│   │   ├── incidentsController.js  # CRUD & lifecycle state transitions for incidents
+│   │   ├── telemetryController.js  # Real-time & historical air sensor telemetry
+│   │   ├── complianceController.js # CPCB NAAQS statutory evaluation & AQI scoring
+│   │   ├── aiController.js         # Gemini incident triage & technical copilot
+│   │   └── locationsController.js  # Geographic coordinates and preset regions
+│   ├── services/
+│   │   ├── cpcbRulesEngine.js      # Exact 2009 Gazette standards & 75% data capture logic
+│   │   ├── aqiCalculator.js        # CPCB 2014 piecewise linear AQI interpolation
+│   │   ├── anomalyDetector.js      # 40% surge heuristic & OLS linear forecasting
+│   │   └── geminiService.js        # Structured prompts, safety wrappers, audit logging
+│   ├── routes/
+│   │   ├── incidentsRoutes.js
+│   │   ├── telemetryRoutes.js
+│   │   ├── complianceRoutes.js
+│   │   ├── aiRoutes.js
+│   │   ├── locationsRoutes.js
+│   │   └── healthRoutes.js
+│   ├── middleware/
+│   │   ├── errorHandler.js         # Centralized error handler
+│   │   └── requestValidator.js     # Payload validation middleware
+│   └── server.js                   # Express application entrypoint
+├── .env
+├── .env.example
+├── .gitignore
+└── package.json
+```
+
+---
+
+## 4. REST API Specification
+
+### 4.1 Health & Diagnostics
+* `GET /api/health`
+  * Response: `{ "success": true, "status": "UP", "timestamp": "...", "version": "1.0.0" }`
+
+### 4.2 Incidents Management (`/api/incidents`)
+* `GET /api/incidents`
+  * Query parameters: `category`, `severity`, `status`, `limit`, `offset`.
+  * Response: List of incidents with joined category, location, and latest status.
+* `POST /api/incidents`
+  * Body: `{ category_id, incident_type, location_id, latitude, longitude, address, severity, description, reporter_name, reporter_contact, evidence_urls }`
+  * Action: Generates `INC-YYYY-XXXXX` tracking code, sets status `Submitted`, persists record and evidence.
+* `GET /api/incidents/:id`
+  * Returns complete incident dossier including updates, assignments, evidence, and linked CAPA records.
+* `PATCH /api/incidents/:id/status`
+  * Body: `{ status, note, updated_by }`
+  * Validates state machine rules (e.g. `Submitted` $\rightarrow$ `Under Review` $\rightarrow$ `Verified` / `Rejected`).
+* `POST /api/incidents/:id/assign`
+  * Body: `{ assigned_department, assigned_to_name, priority, target_completion_time }`
+
+### 4.3 Air Telemetry & Sensors (`/api/telemetry`)
+* `GET /api/telemetry/latest`
+  * Query parameters: `station_id` (optional).
+  * Returns latest readings for all stations with `[SIMULATED DATA]` provenance flags, AQI scores, and compliance status.
+* `GET /api/telemetry/history`
+  * Query parameters: `station_id`, `duration_hours` (default: 24).
+  * Returns time-series observations for chart rendering.
+* `POST /api/telemetry/simulate-spike`
+  * Body: `{ station_id, pollutant, magnitude_multiplier }`
+  * Injects controlled emission surge for interactive demonstration of the $40\%$ surge heuristic.
+
+### 4.4 Environmental Compliance (`/api/compliance`)
+* `GET /api/compliance/summary`
+  * Computes discrete 24-hr, 8-hr, and 1-hr averages for active stations, validates $\ge 75\%$ data completeness, and flags binary `COMPLIANT` vs `STATUTORY BREACH`.
+* `GET /api/compliance/standards`
+  * Returns official CPCB NAAQS 2009 statutory limit table and CPCB AQI 2014 breakpoint references.
+
+### 4.5 AI Incident Intelligence (`/api/advisory`)
+* `POST /api/advisory/incident-triage`
+  * Body: `{ incident_id }`
+  * Calls Gemini API to produce structured triage analysis: root cause hypothesis, immediate containment steps, emergency resources, and CAPA suggestions.
+* `POST /api/advisory/air-compliance`
+  * Body: `{ station_id, pollutant, recorded_value, standard_limit }`
+  * Calls Gemini API for industrial engineering guidance (scrubber adjustments, baghouse inspection, combustion control).
+
+---
+
+## 5. Regulatory Logic Implementation Details
+
+### 5.1 CPCB NAAQS Evaluation Engine (`cpcbRulesEngine.js`)
 
 ```javascript
-// CPCB NAAQS 2009 Statutory Standards Definition (Industrial / Residential / Rural)
-export const NAAQS_STANDARDS = {
-  PM25: {
-    pollutant: 'PM2.5',
-    unit: 'µg/m³',
-    standards: {
-      '24h': 60,
-      annual: 40 // Future Scope: requires >= 104 samples/year
-    }
-  },
-  PM10: {
-    pollutant: 'PM10',
-    unit: 'µg/m³',
-    standards: {
-      '24h': 100,
-      annual: 60 // Future Scope
-    }
-  },
-  SO2: {
-    pollutant: 'SO2',
-    unit: 'µg/m³',
-    standards: {
-      '24h': 80,
-      annual: 50 // Future Scope
-    }
-  },
-  NO2: {
-    pollutant: 'NO2',
-    unit: 'µg/m³',
-    standards: {
-      '24h': 80,
-      annual: 40 // Future Scope
-    }
-  },
-  CO: {
-    pollutant: 'CO',
-    unit: 'mg/m³',
-    standards: {
-      '8h': 2.0,
-      '1h': 4.0
-    }
-  },
-  O3: {
-    pollutant: 'O3',
-    unit: 'µg/m³',
-    standards: {
-      '8h': 100,
-      '1h': 180
+export const CPCB_NAAQS_2009 = {
+  PM25: { name: 'PM2.5', unit: 'µg/m³', limit_24h: 60, limit_annual: 40 },
+  PM10: { name: 'PM10', unit: 'µg/m³', limit_24h: 100, limit_annual: 60 },
+  SO2:  { name: 'SO2',   unit: 'µg/m³', limit_24h: 80,  limit_annual: 50 },
+  NO2:  { name: 'NO2',   unit: 'µg/m³', limit_24h: 80,  limit_annual: 40 },
+  CO:   { name: 'CO',    unit: 'mg/m³', limit_8h: 2.0,  limit_1h: 4.0 },
+  O3:   { name: 'O3',    unit: 'µg/m³', limit_8h: 100,  limit_1h: 180 }
+};
+
+export function evaluateCompliance(readings, pollutant, standardWindow = '24h') {
+  // 1. Validate data completeness (Minimum 75% valid samples)
+  const requiredCount = standardWindow === '24h' ? 24 : standardWindow === '8h' ? 8 : 1;
+  const validSamples = readings.filter(r => r[pollutant.toLowerCase()] !== null && !isNaN(r[pollutant.toLowerCase()]));
+  
+  const completeness = validSamples.length / requiredCount;
+  if (completeness < 0.75) {
+    return {
+      status: 'INSUFFICIENT_DATA_CAPTURE',
+      completenessPercent: (completeness * 100).toFixed(1),
+      isCompliant: null,
+      message: 'CPCB requires at least 75% data capture for statutory assessment.'
+    };
+  }
+
+  // 2. Compute arithmetic mean
+  const sum = validSamples.reduce((acc, curr) => acc + Number(curr[pollutant.toLowerCase()]), 0);
+  const average = sum / validSamples.length;
+  
+  // 3. Evaluate against statutory limit
+  const limit = standardWindow === '24h' 
+    ? CPCB_NAAQS_2009[pollutant].limit_24h 
+    : standardWindow === '8h' 
+      ? CPCB_NAAQS_2009[pollutant].limit_8h 
+      : CPCB_NAAQS_2009[pollutant].limit_1h;
+      
+  const isBreach = average > limit;
+  return {
+    status: isBreach ? 'STATUTORY_BREACH' : 'COMPLIANT',
+    isCompliant: !isBreach,
+    average: Number(average.toFixed(2)),
+    limit,
+    completenessPercent: (completeness * 100).toFixed(1),
+    unit: CPCB_NAAQS_2009[pollutant].unit
+  };
+}
+```
+
+### 5.2 CPCB AQI Piecewise Interpolator (`aqiCalculator.js`)
+
+```javascript
+const AQI_BREAKPOINTS = {
+  PM25: [
+    { cLow: 0, cHigh: 30, iLow: 0, iHigh: 50 },
+    { cLow: 31, cHigh: 60, iLow: 51, iHigh: 100 },
+    { cLow: 61, cHigh: 90, iLow: 101, iHigh: 200 },
+    { cLow: 91, cHigh: 120, iLow: 201, iHigh: 300 },
+    { cLow: 121, cHigh: 250, iLow: 301, iHigh: 400 },
+    { cLow: 250, cHigh: 500, iLow: 401, iHigh: 500 }
+  ],
+  PM10: [
+    { cLow: 0, cHigh: 50, iLow: 0, iHigh: 50 },
+    { cLow: 51, cHigh: 100, iLow: 51, iHigh: 100 },
+    { cLow: 101, cHigh: 250, iLow: 101, iHigh: 200 },
+    { cLow: 251, cHigh: 350, iLow: 201, iHigh: 300 },
+    { cLow: 351, cHigh: 430, iLow: 301, iHigh: 400 },
+    { cLow: 430, cHigh: 600, iLow: 401, iHigh: 500 }
+  ]
+  // Additional breakpoints for SO2, NO2, CO, O3 according to CPCB 2014 manual
+};
+
+export function calculateSubIndex(concentration, pollutant) {
+  const table = AQI_BREAKPOINTS[pollutant];
+  if (!table) return null;
+  for (const bp of table) {
+    if (concentration >= bp.cLow && concentration <= bp.cHigh) {
+      return Math.round(((bp.iHigh - bp.iLow) / (bp.cHigh - bp.cLow)) * (concentration - bp.cLow) + bp.iLow);
     }
   }
-};
-```
-
-### 2.2 Averaging Calculation Strategy
-1. **Discrete Statutory 24-Hour Block:**
-   * Window: 24-hour monitoring block (or continuous 24-hr sampling).
-   * Data Completeness: Requires at least **$75\%$ valid hourly samples** ($18$ valid hours out of $24$). If $<75\%$, flag as `INSUFFICIENT_DATA_CAPTURE`.
-2. **Operational Rolling Average (Real-time Engineering Early Warning):**
-   * Trailing 24-hour mean for $\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{SO}_2$, $\text{NO}_2$.
-   * Trailing 8-hour mean for $\text{CO}$ and $\text{O}_3$.
-   * Trailing 1-hour mean for $\text{CO}$ and $\text{O}_3$ peak exposure checks.
-
-### 2.3 Official CPCB AQI Calculation Engine
-*Reference: CPCB National Air Quality Index Technical Manual (2014)*
-
-Implemented in `aqiCalculator.js`:
-* Evaluates individual sub-indices ($I_i$) using official CPCB piecewise breakpoints.
-* Respects official CPCB pollutant averaging periods:
-  * $\text{PM}_{2.5}$: 24-hr mean concentration.
-  * $\text{PM}_{10}$: 24-hr mean concentration.
-  * $\text{SO}_2$: 24-hr mean concentration.
-  * $\text{NO}_2$: 24-hr mean concentration.
-  * $\text{CO}$: 8-hr mean concentration ($\text{mg}/\text{m}^3$).
-  * $\text{O}_3$: 8-hr mean concentration.
-* Validates CPCB composition criteria:
-  * At least **3 pollutants** must be available.
-  * At least **one particulate parameter** ($\text{PM}_{2.5}$ or $\text{PM}_{10}$) must be present.
-* Determines the **Prominent Pollutant**: the pollutant with the maximum sub-index ($I_{\text{prominent}} = \max(I_i)$).
-
----
-
-## 3. Data Provenance & Anomaly Heuristics
-
-### 3.1 Data Provenance Architecture
-Every record ingested into Supabase and emitted via the REST API contains:
-```json
-{
-  "data_origin": "SIMULATED",
-  "is_simulated": true,
-  "station_code": "STA-GJ-VAPI-01"
+  return concentration > 500 ? 500 : 0;
 }
 ```
-* **Client Rendering:** `<DataOriginBadge origin="SIMULATED" />` renders an amber tag `[SIMULATED DATA]` across all views.
-* **Production Path:** In future production environments, when physical CAAQMS station feeds are ingested via CPCB CCR APIs, `data_origin` is set to `VERIFIED_MONITORING` and `is_simulated` to `false`.
-
-### 3.2 Internal Demonstration Anomaly Heuristic
-* `anomalyService.js` implements the **Internal Surge Heuristic**:
-  $$\text{Surge Ratio} = \frac{C_{\text{instant}} - C_{\text{1h\_baseline}}}{C_{\text{1h\_baseline}}}$$
-  If $\text{Surge Ratio} \ge 0.40$ ($40\%$ increase within 15 minutes), emit an alert: `OPERATIONAL SURGE DETECTED (Internal Heuristic)`.
-* **Important Disclaimer in UI & Logs:** *This alert is triggered by EcoSentinel AI's internal demonstration heuristic for rapid industrial spike detection and does not represent an official CPCB regulatory standard.*
 
 ---
 
-## 4. Gemini AI Integration & Prompt Engineering
+## 6. Gemini AI Advisory Pipeline & Safety Wrappers
 
-### 4.1 Integration Pattern
-The backend uses `@google/genai` (or direct Google GenAI REST endpoint) configured via `BACKEND/.env` with `GEMINI_API_KEY`. The model used is `gemini-2.5-flash` or `gemini-1.5-flash` for low latency ($<3$ seconds).
+### 6.1 Prompt Pipeline Specification
+To guarantee consistent, secure, and structured outputs, the system calls Gemini using explicit JSON schema framing and robust system instructions:
 
-### 4.2 System Instruction & Schema Enforcement
 ```javascript
-const systemInstruction = `
-You are EcoSentinel AI's Senior Industrial Environmental Compliance Specialist.
-Your objective is to provide actionable technical root-cause hypotheses and operational mitigation steps (CAPA) when ambient air parameters exceed permissible CPCB statutory limits.
+export async function generateIncidentTriageAdvisory(incidentDossier) {
+  const prompt = `
+You are the EcoSentinel AI Technical Incident Intelligence Advisor.
+Analyze the following civic/environmental incident and generate an objective operational advisory:
 
-STRICT CONSTRAINTS:
-1. Provide practical industrial engineering guidance (e.g. check wet scrubber liquor pH, inspect baghouse filter differential pressure, optimize furnace fuel-air ratio).
-2. Explicitly reference relevant CPCB industrial standards.
-3. Keep output strictly in valid JSON format matching the schema.
-4. Output must emphasize that recommendations are advisory only and do NOT constitute legal clearance or an official regulatory order under CPCB or State Pollution Control Boards.
+Incident Context:
+- Code: ${incidentDossier.tracking_code}
+- Category: ${incidentDossier.category_name} (${incidentDossier.incident_type})
+- Location: ${incidentDossier.address} (${incidentDossier.latitude}, ${incidentDossier.longitude})
+- Current Severity: ${incidentDossier.severity}
+- Citizen/Field Description: "${incidentDossier.description}"
+
+Produce a structured JSON response with the following keys:
+1. "risk_assessment": Objective evaluation of environmental and public safety hazards.
+2. "immediate_actions": Array of 3 sequential operational steps for field responders.
+3. "recommended_resources": Array of technical equipment or specialized teams needed.
+4. "preventive_capa": Suggested long-term preventive measures.
+5. "confidence_score": Float between 0.0 and 1.0.
+
+Ensure your advice is strictly technical and operational. Do not use speculative language.
 `;
-```
 
-### 4.3 Structured Response Contract
-```json
-{
-  "incident_id": "uuid",
-  "pollutant": "SO2",
-  "recorded_value": 94.5,
-  "standard_limit": 80.0,
-  "unit": "µg/m³",
-  "averaging_period": "24 Hours",
-  "probable_root_causes": [
-    "Flue gas desulphurization (FGD) scrubber caustic dosing pump failure",
-    "High-sulphur furnace oil batch utilized without flue gas scrubbing"
-  ],
-  "immediate_mitigation_steps": [
-    "Check caustic soda (NaOH) recirculation rate and maintain scrubbing slurry pH 8.0-8.5",
-    "Reduce boiler combustion load by 20% until scrubber differential pressure normalizes"
-  ],
-  "long_term_capa": [
-    "Install dual redundant alkali dosing pumps with auto-switchover",
-    "Mandate fuel supplier test certificates for sulphur content (<1.5% wt)"
-  ],
-  "cpcb_reference": "CPCB Environmental Standards for Industrial Boilers and Chemical Processing",
-  "disclaimer": "ADVISORY NOTICE: Recommendations provided by EcoSentinel AI are technical and operational suggestions for internal decision-support. They do not constitute official statutory compliance determinations or certified legal clearance under Central or State Pollution Control Board regulations."
+  const response = await geminiClient.generateContent({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { responseMimeType: 'application/json' }
+  });
+
+  const parsed = JSON.parse(response.text());
+  
+  // Mandatory Safety Disclaimer Wrapper
+  parsed.disclaimer = "ADVISORY NOTICE: Recommendations generated by EcoSentinel AI Copilot are technical suggestions for decision-support. They do not constitute official statutory compliance determinations, legal certifications, or government emergency dispatch orders.";
+  
+  return parsed;
 }
 ```
 
 ---
 
-## 5. REST API Endpoints Specification
+## 7. Security, Environment & Secrets Isolation
 
-| Method | Endpoint | Query / Body | Description |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | None | Service heartbeat & version info. |
-| `GET` | `/api/stations` | None | Returns list of stations with geographic and operational metadata. |
-| `GET` | `/api/telemetry/latest` | `?station_id=uuid` | Instantaneous readings, statutory averages, CPCB AQI, `data_origin: "SIMULATED"`. |
-| `GET` | `/api/telemetry/history` | `?station_id=uuid&hours=24` | Historical time-series points with data completeness percentage. |
-| `POST` | `/api/telemetry/simulate-tick` | `{ station_id, scenario }` | Triggers a simulated telemetry update (`normal`, `so2_spike`, `pm_surge`). |
-| `GET` | `/api/compliance/status` | `?station_id=uuid` | Comprehensive check against 24h, 8h, and 1h NAAQS limits. |
-| `GET` | `/api/incidents` | `?status=OPEN&station_id=uuid` | Lists pollution breach incidents with severity. |
-| `POST` | `/api/incidents` | `{ station_id, pollutant, recorded_value, notes }` | Manually logs an incident ticket. |
-| `PATCH` | `/api/incidents/:id` | `{ status, resolution_notes }` | Transitions incident state (`OPEN` to `MITIGATED` to `CLOSED`). |
-| `POST` | `/api/advisory/generate` | `{ incident_id: "uuid" }` | Generates Gemini AI root-cause analysis & CAPA checklist. |
-
----
-
-## 6. Single-Developer Hackathon Feasibility Matrix
-
-To ensure the MVP is completed smoothly by a solo developer during the hackathon, technical complexity is kept disciplined:
-
-| Module | Hackathon MVP Implementation | Deferred Post-MVP Complexity |
-| :--- | :--- | :--- |
-| **Telemetry Ingestion** | In-memory simulator + Supabase storage | Hardware IoT gateway integration, MQTT broker |
-| **Averaging Engine** | Lightweight SQL window queries + rolling arrays | Distributed streaming pipeline (Kafka / Flink) |
-| **Compliance Checking** | Parameterized CPCB 2009 lookup table | Multi-state SPCB local consent rule engine |
-| **AQI Calculator** | Pure JS CPCB piecewise linear function | Real-time multi-station interpolation maps |
-| **Forecasting** | Linear regression on last 12 hours of data | Deep learning LSTM / Prophet neural forecasting |
-| **AI Advisory** | Single-turn Gemini prompt with structured JSON | RAG vector database indexing full CPCB gazettes |
-| **Styling & UI** | Tailwind CSS + Lucide React + Recharts | Custom WebGL 3D industrial plant twins |
+1. **Secret Storage:** All cloud keys (`GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) are maintained exclusively in `BACKEND/.env` and excluded from source control.
+2. **CORS Policy:** Backend CORS explicitly configured to whitelist `http://localhost:5173` (Vite dev server) with disallowed wildcard credentials.
+3. **Database Security:** Supabase tables configured with appropriate primary keys, foreign key cascading safeguards, and indexes on frequently queried fields (`status`, `severity`, `category_id`, `station_id`).

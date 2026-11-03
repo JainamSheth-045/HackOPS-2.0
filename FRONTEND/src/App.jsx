@@ -14,8 +14,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#F8FAF8] flex">
-        {/* Dark Forest-Green Sidebar */}
+      <div className="min-h-screen bg-[#F7F9F7] text-[#202923] flex font-sans">
+        {/* Minimal White Navigation Sidebar */}
         <Sidebar 
           isOpen={sidebarOpen} 
           onClose={() => setSidebarOpen(false)} 
